@@ -84,6 +84,22 @@ function computeResult(data) {
   return result;
 }
 
+function completeRequest() {
+  let options = {
+    url: 'http://localhost:8000/completed',
+    headers: {
+      'data': JSON.stringify({serverAddress: 'http://localhost:5000'})
+    }
+  };
+
+  request.put(options, function (err, res) {
+    console.log('Completed Request');
+    if (err) {
+      console.log(err);est();
+    }
+  });
+}
+
 app.get('/active', function(req, res) {
   console.log('Active');
   res.send(JSON.stringify({
@@ -128,6 +144,7 @@ app.post('/', function(req,res) {
         });
         res.send(JSON.stringify(result));
     }
+    completeRequest();
   });
 
 });
