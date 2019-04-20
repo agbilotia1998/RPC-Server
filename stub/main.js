@@ -15,7 +15,7 @@ let responseSchema = new Schema({
   result: String
 });
 let responses = mongoose.model('response', responseSchema);
-let DB_URL = process.env.DB || "mongodb://localhost:27017/response";
+let DB_URL = process.env.DB || "mongodb://localhost:27017/service-provider";
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -37,7 +37,7 @@ function marshall(service) {
   }
   data['parameters'] = allParams;
   data['returnType'] = service.returnType;
-  data['server'] = 'http://localhost:5000';
+  data['server'] = 'http://34a84a49.ngrok.io';
 
   return data;
 }
@@ -63,7 +63,7 @@ function registerRPC(services) {
       method: 'post',
       body: marshalled_service,
       json: true,
-      url: 'http://localhost:8000/map'
+      url: 'https://registry-service-provider.herokuapp.com/map'
     };
 
     request(options, function (err, resp) {
@@ -86,16 +86,17 @@ function computeResult(data) {
 
 function completeRequest() {
   let options = {
-    url: 'http://localhost:8000/completed',
+    url: 'https://registry-service-provider.herokuapp.com/completed',
     headers: {
-      'data': JSON.stringify({serverAddress: 'http://localhost:5000'})
+      'data': JSON.stringify({serverAddress: 'http://34a84a49.ngrok.io'})
     }
   };
 
   request.put(options, function (err, res) {
     console.log('Completed Request');
     if (err) {
-      console.log(err);est();
+      console.log(err);
+      // est();
     }
   });
 }
@@ -109,7 +110,7 @@ app.get('/active', function(req, res) {
 
 app.post('/', function(req,res) {
   let data = req.body;
-  let ip = req.ip;
+  let ip = data.clientIp;
   let service = data.serviceName;
 
   responses.findOne({ipAddress: ip, service: service}, function(err, response) {
